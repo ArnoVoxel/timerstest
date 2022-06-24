@@ -3,7 +3,7 @@
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\TimerController;
-use App\Models\Company;
+use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -22,8 +22,18 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::apiResource('timers', TimerController::class);
+Route::get('users/force-login/{user}', [UserController::class, 'forceLogin']);
+Route::get('users/logout', [UserController::class, 'logout']);
+Route::get('timers/stop-timer', [TimerController::class, 'stopTimer']);
 
-Route::apiResource('categories', CategoryController::class);
+Route::apiResource('users', UserController::class);
 
-Route::apiResource('companies', CompanyController::class);
+
+Route::middleware('auth:api')->group( function(){
+        Route::apiResource('timers', TimerController::class);
+        
+        Route::apiResource('categories', CategoryController::class);
+        
+        Route::apiResource('companies', CompanyController::class);
+    }
+);

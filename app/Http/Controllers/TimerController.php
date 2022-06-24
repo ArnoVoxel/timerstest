@@ -6,6 +6,7 @@ use App\Http\Resources\TimerResource;
 use App\Models\Timer;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class TimerController extends Controller
 {
@@ -16,7 +17,7 @@ class TimerController extends Controller
      */
     public function index()
     {
-        return TimerResource::collection(Timer::get());
+        return TimerResource::collection(Timer::where('user_id', Auth::id())->orderBy('id', 'DESC')->get());
     }
 
     /**
@@ -38,20 +39,23 @@ class TimerController extends Controller
     public function store(Request $request)
     {
         $timer = new Timer();
-        $timer->user_id = request('user');
-        $timer->category_id = request('category');
-        $timer->company_id = request('company');
+        $timer->user_id = Auth::id();
+        $timer->category_id = request('category.id');
+        $timer->company_id = request('company.id');
         $timer->started_at = new Carbon(now());
 
-        // stop the previous timer
-        $oldTimer = Timer::all()->last();
-        if(isset($oldTimer)){
-            $oldTimer->ended_at = now();
-            $oldTimer->save();
-        }
+        // prevent a timer to still run
+        // each new timer check the null state of ended_at
+        Timer::where('user_id', Auth::id())->whereNull('ended_at')->update(['ended_at' => now()]);
 
         $timer->save();
-        return response()->json([$request->all()]);
+        //return response()->json(['ancientsTimers' => count($missedTimers)]);
+    }
+
+    public function stopTimer(Request $request)
+    {
+        \Log::info("entrée stop timer");
+        Timer::where('user_id', Auth::id())->whereNull('ended_at')->update(['ended_at' => now()]);
     }
 
     /**

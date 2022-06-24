@@ -5,8 +5,6 @@ namespace App\Http\Resources;
 use App\Models\Category;
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Models\Company;
-use App\Models\User;
-use Carbon\Carbon;
 
 class TimerResource extends JsonResource
 {
