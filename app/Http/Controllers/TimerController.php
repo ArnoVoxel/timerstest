@@ -49,12 +49,14 @@ class TimerController extends Controller
         Timer::where('user_id', Auth::id())->whereNull('ended_at')->update(['ended_at' => now()]);
 
         $timer->save();
-        //return response()->json(['ancientsTimers' => count($missedTimers)]);
     }
 
+    /**
+     * Stop all running timers
+     */
     public function stopTimer(Request $request)
     {
-        \Log::info("entrée stop timer");
+        // \Log::info("entrée stop timer");
         Timer::where('user_id', Auth::id())->whereNull('ended_at')->update(['ended_at' => now()]);
     }
 

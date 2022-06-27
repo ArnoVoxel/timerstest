@@ -17,6 +17,7 @@ class TimerResource extends JsonResource
     public function toArray($request)
     {
         return ['id' => $this->id,
+                'user_id' => $this->user_id,
                 'started_at' => $this->started_at->toDateTimeString(),
                 'ended_at' => isset($this->ended_at)? $this->ended_at->toDateTimeString() : $this->ended_at,
                 'time_spent' => $this->time_spent,

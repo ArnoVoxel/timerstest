@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\TimerController;
 use App\Http\Controllers\UserController;
@@ -18,7 +19,8 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    //return view('welcome');
+    return 'hibou';
 });
 
 Route::get('/users', [UserController::class, 'liste']);
@@ -28,3 +30,5 @@ Route::get('/tickets', [TicketController::class, 'liste']);
 Route::get('/create_timer', [TimerController::class, 'index']);
 
 Route::post('/create_timer', [TimerController::class, 'create']);
+
+Route::get('categories', [CategoryController::class, 'index']);
