@@ -56,7 +56,6 @@ class TimerController extends Controller
      */
     public function stopTimer(Request $request)
     {
-        // \Log::info("entrée stop timer");
         Timer::where('user_id', Auth::id())->whereNull('ended_at')->update(['ended_at' => now()]);
     }
 

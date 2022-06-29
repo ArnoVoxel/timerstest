@@ -5,6 +5,7 @@ namespace App\Http\Resources;
 use App\Models\Category;
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Models\Company;
+use App\Models\Ticket;
 
 class TimerResource extends JsonResource
 {
@@ -25,6 +26,7 @@ class TimerResource extends JsonResource
                 'company_name' => Company::find($this->company_id)->company_label,
                 //'company_name' => CompanyResource::collection($this->company_id),
                 'category' => Category::find($this->category_id)->category_label,
+                'ticket' => $this->ticket_id
             ];
     }
 }

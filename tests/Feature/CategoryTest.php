@@ -4,9 +4,11 @@ namespace Tests\Feature;
 
 use App\Http\Controllers\CategoryController;
 use App\Models\Category;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
+use Illuminate\Support\Facades\Auth;
 
 class CategoryTest extends TestCase
 {
@@ -24,6 +26,9 @@ class CategoryTest extends TestCase
 
     public function testCategoryLabel()
     {
+        $user = User::where('id', 2)->first();
+        Auth::login($user);
+
         $response = $this->get('categories');
 
         $this->assertIsObject(json_decode($response->getContent()));
