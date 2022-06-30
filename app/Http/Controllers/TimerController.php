@@ -92,12 +92,12 @@ class TimerController extends Controller
     public function update(Request $request, $id)
     {
         //Log::info($request);
-        /* Timer::where('user_id', Auth::id())
+        Timer::where('user_id', Auth::id())
             ->update([
                 'started_at' => $request->started_at,
                 'category_id' => $request->category,
                 'company_id' => $request-> company,
-            ]); */
+            ]);
     }
 
     /**
