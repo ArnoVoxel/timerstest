@@ -31,6 +31,7 @@ Route::apiResource('users', UserController::class);
 
 Route::middleware('auth:api')->group( function(){
         Route::apiResource('timers', TimerController::class);
+        //Route::post('timers/update', TimerController::class, 'update');
         
         Route::apiResource('categories', CategoryController::class);
         

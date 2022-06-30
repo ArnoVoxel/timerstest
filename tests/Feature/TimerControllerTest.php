@@ -122,7 +122,7 @@ class TimerControllerTest extends TestCase
 
     public function test_stop_timer_of_user_id()
     {
-        self::setConnectedUser(rand(1,10));
+        self::setConnectedUser(1);
 
         $timerData = [
             'user_id' => auth()->user()->id,
@@ -131,32 +131,47 @@ class TimerControllerTest extends TestCase
             'started_at' => now(),
         ];
 
+        // create a new timer 
         $this->postJson('/api/timers', $timerData);
 
+        // get the timers of the connected user
         $response = $this->getJson('/api/timers');
 
-        $response->assertJson(fn(AssertableJson $json) =>
-            $json->where('ended_at', null)
+        // response structure if there is at least one timer created
+        $response->assertJsonStructure(
+            [
+                'data' => [
+                    0 => [
+                        'id',
+                        'user_id',
+                        'started_at',
+                        'ended_at',
+                        'time_spent',
+                        'company_id',
+                        'company_name',
+                        'category',
+                        'ticket',
+                    ]
+                ] 
+            ]
         );
+        
+        $timersListe = $this->getJson('/api/timers');
+        
+        $json = $timersListe->json();
+        Log::info($json);
+        $this->assertSame(null, $json['data'][0]['ended_at']);
+        $this->assertNull($json['data'][0]['ended_at']);
 
-        /* foreach($listeTimers as $timer){
-            foreach($timer as $info){
-                Log::info(json_decode($info));
-            }
-        }
+        // request to stop the timer
+        $this->getJson('/api/timers/stop-timer');
 
-        Log::info(json_encode($listeTimers));
+        // get the timers after stopping them
+        $timersListeStop = $this->getJson('/api/timers');
+        $jsonStop = $timersListeStop->json();
 
-        $this->json('get', '/api/timers/stop-timer');
-
-        $listeTimersStop = $this->json('get', '/api/timers');
-
-        Log::info(json_encode($listeTimersStop));
-
-
-        $response = count(Timer::where('user_id', Auth::id())->whereNull('ended_at')); */
-
-        $this->assertEquals(null, $response);
+        Log::info($jsonStop);
+        $this->assertNotNull($jsonStop['data'][0]['ended_at']);
 
     }
 }

@@ -7,6 +7,7 @@ use App\Models\Timer;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class TimerController extends Controller
 {
@@ -90,7 +91,13 @@ class TimerController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        //Log::info($request);
+        /* Timer::where('user_id', Auth::id())
+            ->update([
+                'started_at' => $request->started_at,
+                'category_id' => $request->category,
+                'company_id' => $request-> company,
+            ]); */
     }
 
     /**

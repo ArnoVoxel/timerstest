@@ -26,7 +26,8 @@ class TimerResource extends JsonResource
                 'company_name' => Company::find($this->company_id)->company_label,
                 //'company_name' => CompanyResource::collection($this->company_id),
                 'category' => Category::find($this->category_id)->category_label,
-                'ticket' => $this->ticket_id
-            ];
+                'ticket' => $this->ticket_id,
+                'isEdit' => false,
+             ];
     }
 }
