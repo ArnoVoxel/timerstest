@@ -26,7 +26,7 @@ Route::get('users/force-login/{user}', [UserController::class, 'forceLogin']);
 Route::get('users/logout', [UserController::class, 'logout']);
 Route::get('timers/stop-timer', [TimerController::class, 'stopTimer']);
 
-Route::post('timers/update/{id}', [TimerController::class, 'update']);
+Route::put('timers/update/{id}', [TimerController::class, 'update']);
 
 Route::apiResource('users', UserController::class);
 

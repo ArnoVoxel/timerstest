@@ -91,8 +91,9 @@ class TimerController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //Log::info($request);
-        Timer::where('user_id', Auth::id())
+        Log::info('tentative de mise à jour');
+        Timer::where('user_id', $id)
+            ->where('id', $request->id)
             ->update([
                 'started_at' => $request->started_at,
                 'category_id' => $request->category,
