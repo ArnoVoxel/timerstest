@@ -18,7 +18,8 @@ class TimerController extends Controller
      */
     public function index()
     {
-        return TimerResource::collection(Timer::where('user_id', Auth::id())->orderBy('id', 'DESC')->get());
+        $data = Timer::where('user_id', Auth::id())->orderBy('id', 'DESC')->paginate(4);
+        return TimerResource::collection($data);
     }
 
     /**

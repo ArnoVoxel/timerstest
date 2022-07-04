@@ -26,12 +26,13 @@ Route::get('users/force-login/{user}', [UserController::class, 'forceLogin']);
 Route::get('users/logout', [UserController::class, 'logout']);
 Route::get('timers/stop-timer', [TimerController::class, 'stopTimer']);
 
-Route::put('timers/update/{id}', [TimerController::class, 'update']);
 
 Route::apiResource('users', UserController::class);
 
 
 Route::middleware('auth:api')->group( function(){
+        Route::put('timers/update/{id}', [TimerController::class, 'update']);
+        
         Route::apiResource('timers', TimerController::class);
         
         Route::apiResource('categories', CategoryController::class);
