@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\TimerApiController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\TimerController;
@@ -32,6 +33,7 @@ Route::apiResource('users', UserController::class);
 
 Route::middleware('auth:api')->group( function(){
         Route::put('timers/update/{id}', [TimerController::class, 'update']);
+        Route::delete('timers/delete/{id}/{user_id}', [TimerController::class, 'destroy']);
         
         Route::apiResource('timers', TimerController::class);
         

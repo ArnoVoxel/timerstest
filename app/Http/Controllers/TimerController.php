@@ -6,6 +6,7 @@ use App\Http\Resources\TimerResource;
 use App\Models\Timer;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
@@ -16,10 +17,22 @@ class TimerController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $data = Timer::where('user_id', Auth::id())->orderBy('id', 'DESC')->paginate(4);
-        return TimerResource::collection($data);
+        /* $data = Timer::where('user_id', Auth::id())->orderBy('id', 'DESC')->paginate(4);
+        return TimerResource::collection($data); */
+
+        //$this->authorize('viewAny', Timer::class);
+
+        $timersQuery = Timer::where('user_id', Auth::id())->orderBy('id', 'DESC');
+        $timers = $timersQuery->paginate(6, ['*'], 'page', $request['page'] ?? 1);
+
+        return new JsonResource([
+            'data' => TimerResource::collection($timers->items()),
+            'total' => $timers->total(),
+            'per_page' => $timers->perPage(),
+        ]);
+
     }
 
     /**
@@ -92,7 +105,6 @@ class TimerController extends Controller
      */
     public function update(Request $request, $id)
     {
-        Log::info('tentative de mise à jour');
         Timer::where('user_id', $id)
             ->where('id', $request->id)
             ->update([
@@ -108,8 +120,13 @@ class TimerController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($id, $user_id)
     {
-        //
+        //Log::info('tentative de suppression');
+
+        Timer::where('id', $id)
+            ->where('user_id', $user_id)
+            ->delete();;
+
     }
 }
