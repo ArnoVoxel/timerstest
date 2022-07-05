@@ -186,7 +186,7 @@ class TimerControllerTest extends TestCase
         // create a new timer
         $timerData = [
             'user_id' => auth()->user()->id,
-            'category' => ['id' => $category_id],
+            'category' => ['category_id' => $category_id],
             'company' => ['id' => $company_id],
             'started_at' => now(),
         ];

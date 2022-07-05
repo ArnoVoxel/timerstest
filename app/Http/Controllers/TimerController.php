@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\TimerRequest;
 use App\Http\Resources\TimerResource;
 use App\Models\Timer;
 use Carbon\Carbon;
@@ -52,8 +53,10 @@ class TimerController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(TimerRequest $request)
     {
+        Log::info($request->__toString());
+
         $timer = new Timer();
         $timer->user_id = Auth::id();
         $timer->category_id = request('category.id');
