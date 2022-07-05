@@ -91,7 +91,7 @@ class TimerControllerTest extends TestCase
                             'id',
                             'started_at',
                             'ended_at',
-                            'category',
+                            'category_id',
                             'user_id',
                             'company_id',
                             'ticket',
@@ -148,18 +148,18 @@ class TimerControllerTest extends TestCase
                         'ended_at',
                         'time_spent',
                         'company_id',
-                        'company_name',
-                        'category',
+                        'company_label',
+                        'category_id',
                         'ticket',
                     ]
-                ] 
+                ]
             ]
         );
         
         $timersListe = $this->getJson('/api/timers');
         
         $json = $timersListe->json();
-        Log::info($json);
+        //Log::info($json);
         $this->assertSame(null, $json['data'][0]['ended_at']);
         $this->assertNull($json['data'][0]['ended_at']);
 
@@ -170,8 +170,42 @@ class TimerControllerTest extends TestCase
         $timersListeStop = $this->getJson('/api/timers');
         $jsonStop = $timersListeStop->json();
 
-        Log::info($jsonStop);
+        //Log::info($jsonStop);
         $this->assertNotNull($jsonStop['data'][0]['ended_at']);
 
+    }
+
+    public function test_update_timer()
+    {
+        self::setConnectedUser(2);
+
+        // define category and company to compare the updated timer
+        $category_id = 1;
+        $company_id = 1;
+
+        // create a new timer
+        $timerData = [
+            'user_id' => auth()->user()->id,
+            'category' => ['id' => $category_id],
+            'company' => ['id' => $company_id],
+            'started_at' => now(),
+        ];
+
+        $this->postJson('/api/timers', $timerData);
+
+        // the last timer in Database is the new created one
+        $newTimer = Timer::where('user_id', 2)->first();
+
+        Log::info($newTimer);
+
+        $this->assertEquals(1, $newTimer->category_id);
+        $this->assertEquals(1, $newTimer->company_id);
+
+        /* $newTimerDate = [
+            'category' => ['id' => 2],
+            'company' => ['id' => 2],
+        ];
+
+        $this->putJson('/api/timers/update/'+auth()->user()->id, []); */
     }
 }

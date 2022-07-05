@@ -18,7 +18,7 @@ class CompanyFactory extends Factory
     public function definition()
     {
         return [
-            'company_label' => $this->faker->company,
+            'label' => $this->faker->company,
         ];
     }
 }

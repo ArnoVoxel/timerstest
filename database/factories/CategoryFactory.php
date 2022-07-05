@@ -19,7 +19,7 @@ class CategoryFactory extends Factory
     public function definition()
     {
         return [
-            'category_label' => $this->faker->jobTitle,
+            'label' => $this->faker->jobTitle,
         ];
     }
 }

@@ -44,22 +44,22 @@ class Timer extends Model
         return $dateEnd->diffInHours($dateStart).":".$dateEnd->diffInMinutes($dateStart).":".$dateEnd->diffInRealSeconds($dateStart);
     }
 
-    public function users()
+    public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    public function categories()
+    public function category()
     {
         return $this->belongsTo(Category::class);
     }
 
-    public function tickets()
+    public function ticket()
     {
         return $this->belongsTo(Ticket::class);
     }
 
-    public function companies()
+    public function company()
     {
         return $this->belongsTo(Company::class);
     }

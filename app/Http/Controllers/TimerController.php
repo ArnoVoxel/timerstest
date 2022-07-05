@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class TimerController extends Controller
@@ -59,11 +60,15 @@ class TimerController extends Controller
         $timer->company_id = request('company.id');
         $timer->started_at = new Carbon(now());
 
+        DB::beginTransaction();
+
         // prevent a timer to still run
         // each new timer check the null state of ended_at
         Timer::where('user_id', Auth::id())->whereNull('ended_at')->update(['ended_at' => now()]);
 
         $timer->save();
+
+        DB::commit();
     }
 
     /**
@@ -103,15 +108,19 @@ class TimerController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Timer $timer)
     {
-        Timer::where('user_id', $id)
-            ->where('id', $request->id)
-            ->update([
+        Log::info($timer);
+        Log::info($request->category);
+        $data = [
                 'started_at' => $request->started_at,
                 'category_id' => $request->category,
                 'company_id' => $request-> company,
-            ]);
+            ];
+
+        $timer->fill($data);
+        Log::info($timer);
+        $timer->save();
     }
 
     /**
