@@ -14,6 +14,6 @@ class TimerTableSeeder extends Seeder
      */
     public function run()
     {
-        Timer::factory()->count(50)->create();
+        Timer::factory()->count(200)->create();
     }
 }

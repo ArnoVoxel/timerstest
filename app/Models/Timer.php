@@ -41,7 +41,18 @@ class Timer extends Model
         $dateStart = new Carbon($this->started_at);
         $dateEnd = new Carbon($this->ended_at);
 
-        return $dateEnd->diffInHours($dateStart).":".$dateEnd->diffInMinutes($dateStart).":".$dateEnd->diffInRealSeconds($dateStart);
+        // get the difference in minutes
+        $totalSpentMinutes = $dateEnd->diffInMinutes($dateStart);
+
+        // display the hours spent only if it's up to 1hour
+        if(($totalSpentMinutes / 60) >= 1){
+            $hoursSpent = round($totalSpentMinutes / 60);
+            $hoursSpent = sprintf("%02d", $hoursSpent);
+        } else {
+            $hoursSpent = 0;
+        }
+
+        return $hoursSpent.":".sprintf("%02d", $totalSpentMinutes%60);
     }
 
     public function user()

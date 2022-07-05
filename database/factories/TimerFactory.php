@@ -24,11 +24,11 @@ class TimerFactory extends Factory
 
         return [
             'started_at' => $startTime->toDateTimeString(),
-            'ended_at' => $startTime->addMinutes(rand(1,45)),
+            'ended_at' => $startTime->addMinutes(rand(1,90)),
             'user_id' => User::all()->random()->id,
             'category_id' => Category::all()->random()->id,
             'company_id' => Company::all()->random()->id,
-            'ticket_id' => Ticket::all()->random()->id,
+            'ticket_id' => $faker->boolean(50) ? Ticket::all()->random()->id : null,
         ];
     }
 }
