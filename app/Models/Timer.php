@@ -29,8 +29,8 @@ class Timer extends Model
      * Tells values of started_at and ended_at are dates
      */
     protected $casts = [
-        'started_at' => 'datetime:Y-m-d H:i:s',
-        'ended_at'=> 'datetime:Y-m-d H:i:s',
+        'started_at' => 'datetime:Y-m-d H:i',
+        'ended_at'=> 'datetime:Y-m-d H:i',
     ];
 
     public function getTimeSpentAttribute()

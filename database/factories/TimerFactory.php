@@ -23,8 +23,8 @@ class TimerFactory extends Factory
         $startTime = Carbon::createFromTimestamp($faker->dateTimeBetween('-1 years','now')->getTimestamp());
 
         return [
-            'started_at' => $startTime->toDateTimeString(),
-            'ended_at' => $startTime->addMinutes(rand(1,90)),
+            'started_at' => $startTime->toDateTimeString($unitPrecision = 'minute'),
+            'ended_at' => $startTime->addMinutes(rand(1,90))->toDateTimeString($unitPrecision = 'minute'),
             'user_id' => User::all()->random()->id,
             'category_id' => Category::all()->random()->id,
             'company_id' => Company::all()->random()->id,

@@ -32,14 +32,14 @@ Route::apiResource('users', UserController::class);
 
 
 Route::middleware('auth:api')->group( function(){
-
-        Route::put('timers/update/{timer}', [TimerController::class, 'update']);
-        Route::delete('timers/delete/{id}/{user_id}', [TimerController::class, 'destroy']);
+    
+    Route::put('timers/update/{timer}', [TimerController::class, 'update']);
+    Route::delete('timers/delete/{id}/{user_id}', [TimerController::class, 'destroy']);
+    
+    Route::apiResource('timers', TimerController::class);
         
-        Route::apiResource('timers', TimerController::class);
-        
-        Route::apiResource('categories', CategoryController::class);
-        
-        Route::apiResource('companies', CompanyController::class);
+    Route::apiResource('categories', CategoryController::class);
+    
+    Route::apiResource('companies', CompanyController::class);
     }
 );

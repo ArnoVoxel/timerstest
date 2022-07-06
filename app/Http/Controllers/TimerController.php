@@ -26,7 +26,7 @@ class TimerController extends Controller
 
         //$this->authorize('viewAny', Timer::class);
 
-        $timersQuery = Timer::where('user_id', Auth::id())->orderBy('id', 'DESC');
+        $timersQuery = Timer::with(['company', 'category'])->where('user_id', Auth::id())->orderBy('id', 'DESC');
         $timers = $timersQuery->paginate(6, ['*'], 'page', $request['page'] ?? 1);
 
         return new JsonResource([
