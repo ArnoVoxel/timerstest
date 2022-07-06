@@ -33,7 +33,6 @@
         <h2 class="mt-3">Liste des timers</h2>
         <div class="overflow-auto">
 
-                <p>test</p>
             <!-- input search to filter the content of the table -->
             <b-input-group>
                 <b-form-input v-model="keyword" placeholder="Rechercher" type="text"></b-form-input>
@@ -75,12 +74,12 @@
                     </template>
 
                     <template #cell(company_label)="data">
-                        <b-form-select v-if="data.item.isEdit" v-model="formUpdate.company" value-field="id" text-field="label" :options="options.companies" class="form-control"></b-form-select>
+                        <multiselect v-if="data.item.isEdit" v-model="formUpdate.company" label="label" :options="options.companies" ></multiselect>
                         <span v-else>{{data.value}}</span>
                     </template>
 
                     <template #cell(category_label)="data">
-                        <b-form-select v-if="data.item.isEdit" v-model="formUpdate.category" value-field="id" text-field="label" :options="options.categories" class="form-control"></b-form-select>
+                        <multiselect v-if="data.item.isEdit" v-model="formUpdate.category" label="label" :options="options.categories" placeholder="choisissez une catégorie" ></multiselect>
                         <span v-else>{{data.value}}</span>
                     </template>
 
@@ -88,8 +87,8 @@
                         <b-button v-if="!data.item.isEdit" variant="warning" @click="editRowHandler(data)">Edit</b-button>
                         <b-row v-else class="d-flew flex-row">
                                 <b-input-group v-if="data.item.isEdit" align-self="center">
-                                    <b-btn variant="warning" type="submit" @click.prevent="onUpdate(data)">Done</b-btn>
-                                    <b-btn variant="warning" type="submit" @click.prevent="data.item.isEdit=false">Cancel</b-btn>
+                                    <b-button  variant="warning" type="submit" @click.prevent="onUpdate(data)">Done</b-button >
+                                    <b-button  variant="warning" type="submit" @click.prevent="data.item.isEdit=false">Cancel</b-button >
                                 </b-input-group>
                         </b-row>
                     </template>
@@ -297,8 +296,8 @@ import Multiselect from 'vue-multiselect';
                             this.formUpdate = {
                                 'user_id' : data.item.user_id,
                                 'started_at' : this.formUpdate.started_at,
-                                'category' : this.formUpdate.category,
-                                'company' : this.formUpdate.company,
+                                'category' : this.formUpdate.category.id,
+                                'company' : this.formUpdate.company.id,
                             };
 
                             console.log(this.formUpdate);
