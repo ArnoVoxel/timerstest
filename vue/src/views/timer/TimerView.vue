@@ -73,6 +73,20 @@
                         <span v-else>{{data.value}}</span>
                     </template>
 
+                    <template #cell(ended_at)="data">
+                        <b-input-group v-if="data.item.isEdit">
+                        <b-row>
+                            <b-col cols="12">
+                                <b-form-datepicker  v-model="formUpdate.ended_at"></b-form-datepicker>
+                            </b-col>
+                            <b-col cols="12">
+                                <b-form-timepicker v-model="timePick.timeEnd" size="sm" ></b-form-timepicker>
+                            </b-col>
+                        </b-row>
+                        </b-input-group>
+                        <span v-else>{{data.value}}</span>
+                    </template>
+
                     <template #cell(company_label)="data">
                         <multiselect v-if="data.item.isEdit" v-model="formUpdate.company" label="label" :options="options.companies" ></multiselect>
                         <span v-else>{{data.value}}</span>
@@ -145,6 +159,7 @@ import Multiselect from 'vue-multiselect';
                             formUpdate:{
                                 user_id: null,
                                 started_at: null,
+                                ended_at: null,
                                 category : null,
                                 company : null,
                             },
@@ -241,6 +256,16 @@ import Multiselect from 'vue-multiselect';
                             // reverse the value of boolean for timers.isEdit on specific row
                             data.isEdit = !this.timers[data.index].isEdit;
                             this.$set(this.timers[data.index], 'isEdit', data.isEdit);
+                            this.formUpdate.category = {id:data.item.category_id,
+                                                        label:data.item.category_label};
+                            this.formUpdate.company = {id:data.item.company_id,
+                                                        label:data.item.company_label};
+                            this.formUpdate.started_at = data.item.started_at;
+                            this.formUpdate.ended_at = data.item.ended_at;
+                            this.timePick.time = data.item.started_at.split(' ').splice(1, 1).toString();
+                            this.timePick.timeEnd = data.item.ended_at.split(' ').splice(1, 1).toString();
+                            console.log(data);
+                            console.log(this.formUpdate);
                         },
                         getItems(){
                             this.$axios.get('http://127.0.0.1:8000/api/timers')
@@ -249,6 +274,9 @@ import Multiselect from 'vue-multiselect';
                                     this.data = res.data;
                                     for(let i = 0; i < res.data.data.length; i++){
                                         this.timePick[i] = {'time' : res.data.data[i]['started_at'].split(' ').splice(1, 1).toString()};
+                                        if(res.data.data[i]['ended_at'] != null){
+                                            this.timePick[i] = {'timeEnd' : res.data.data[i]['ended_at'].split(' ').splice(1, 1).toString()};
+                                        }
                                     }
                                 });
                         },
@@ -293,14 +321,29 @@ import Multiselect from 'vue-multiselect';
                         },
                         onUpdate(data){
 
+                            if(this.formUpdate.started_at.length > 10){
+                                this.started_at_date = this.formUpdate.started_at;
+                            } else {
+                                this.started_at_date = this.formUpdate.started_at+" "+this.timePick.time;
+                            }
+
+                            if(this.formUpdate.ended_at.length > 10){
+                                this.ended_at_date = this.formUpdate.ended_at;
+                            } else {
+                                this.ended_at_date = this.formUpdate.ended_at+" "+this.timePick.timeEnd;
+                            }
+
                             this.formUpdate = {
                                 'user_id' : data.item.user_id,
-                                'started_at' : this.formUpdate.started_at,
+                                'started_at' : this.started_at_date,
+                                'ended_at' : this.ended_at_date,
                                 'category' : this.formUpdate.category.id,
                                 'company' : this.formUpdate.company.id,
                             };
 
                             console.log(this.formUpdate);
+                            console.log(this.timePick.time);
+                            console.log(this.timePick.timeEnd);
 
                             this.$axios.put('http://127.0.0.1:8000/api/timers/update/'+data.item.id, this.formUpdate)
                                 .then(() => {
@@ -327,16 +370,16 @@ import Multiselect from 'vue-multiselect';
                             console.log(this.data.data);
                             console.log(JSON.stringify(this.data.data)); */
     
-                            /* console.log('this.timers : ');
+                            console.log('this.timers : ');
                             console.log(this.timers);
-                            console.log(JSON.stringify(this.timers)); */
+                            console.log(JSON.stringify(this.timers));
 
-                            console.log('this.errors : ');
-                            console.log(this.errors);
+                            // console.log('this.errors : ');
+                            // console.log(this.errors);
 
-                            console.log('this.timePick : ');
-                            console.log(this.timePick);
-                            console.log(JSON.stringify(this.timePick));
+                            // console.log('this.timePick : ');
+                            // console.log(this.timePick);
+                            // console.log(JSON.stringify(this.timePick));
                         },
                     },
                     mounted(){

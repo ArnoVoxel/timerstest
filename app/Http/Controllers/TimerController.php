@@ -117,6 +117,7 @@ class TimerController extends Controller
         Log::info($request->category);
         $data = [
                 'started_at' => $request->started_at,
+                'ended_at' => $request->ended_at,
                 'category_id' => $request->category,
                 'company_id' => $request-> company,
             ];
