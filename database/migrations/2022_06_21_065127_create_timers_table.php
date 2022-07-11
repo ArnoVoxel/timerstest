@@ -17,6 +17,7 @@ class CreateTimersTable extends Migration
             $table->id();
             $table->timestamp('started_at')->useCurrent();
             $table->timestamp('ended_at')->nullable();
+            $table->string('time_spent')->nullable();
             $table->unsignedBigInteger('category_id');
             $table->unsignedBigInteger('ticket_id')->nullable();
             $table->unsignedBigInteger('user_id');

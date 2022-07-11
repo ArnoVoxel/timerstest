@@ -26,8 +26,7 @@ class TimerRequest extends FormRequest
         return [
             'company' => 'required',
             'category' => 'required',
-            'started_at' =>'date',
-            'ended_at' => 'date|after:started_at'
+
         ];
     }
 }

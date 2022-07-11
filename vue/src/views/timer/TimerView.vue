@@ -391,9 +391,9 @@ import Multiselect from 'vue-multiselect';
                             this.showDismissibleAlert = !this.showDismissibleAlert;
                         },
                         getPage(){
-                            /* console.log('this.data : ');
+                            console.log('this.data : ');
                             console.log(this.data.data);
-                            console.log(JSON.stringify(this.data.data)); */
+                            console.log(JSON.stringify(this.data.data));
     
                             console.log('this.timers : ');
                             console.log(this.timers);

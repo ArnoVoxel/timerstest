@@ -20,6 +20,7 @@ class Timer extends Model
     protected $fillable = [
         'started_at',
         'ended_at',
+        'time_spent',
         'category_id',
         'ticket_id',
         'user_id',
@@ -34,7 +35,7 @@ class Timer extends Model
         'ended_at'=> 'datetime:Y-m-d H:i',
     ];
 
-    public function getTimeSpentAttribute()
+    /* public function getTimeSpentAttribute()
     {
         if($this->ended_at === null){
             return null;
@@ -61,7 +62,7 @@ class Timer extends Model
         }
 
         return $hoursSpent.":".sprintf("%02d", $totalSpentMinutes%60);
-    }
+    } */
 
     public function user()
     {

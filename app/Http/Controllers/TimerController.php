@@ -50,7 +50,7 @@ class TimerController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created timer in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
@@ -64,6 +64,8 @@ class TimerController extends Controller
         $timer->category_id = request('category.id');
         $timer->company_id = request('company.id');
         $timer->started_at = new Carbon(now());
+
+        Log::info($timer);
 
         DB::beginTransaction();
 
@@ -82,6 +84,27 @@ class TimerController extends Controller
     public function stopTimer(Request $request)
     {
         Timer::where('user_id', Auth::id())->whereNull('ended_at')->update(['ended_at' => now()]);
+
+        // update the time_spent column for the last timer of the user 
+        $timer = Timer::where('user_id', Auth::id())->get()->last();
+
+        $startTime = new Carbon($timer->started_at);
+        $endTime = new Carbon($timer->ended_at);
+
+        // get the difference in minutes
+        $totalSpentMinutes = $endTime->diffInMinutes($startTime);
+        if(($totalSpentMinutes / 60) >= 1){
+            $hoursSpent = round($totalSpentMinutes / 60);
+            $hoursSpent = sprintf("%02d", $hoursSpent);
+        } else {
+            $hoursSpent = 0;
+        }
+
+        $time_spent = $hoursSpent.":".sprintf("%02d", $totalSpentMinutes%60);
+        Log::info($time_spent);
+
+        $timer->time_spent = $time_spent;
+        $timer->save();
     }
 
     /**
@@ -131,7 +154,7 @@ class TimerController extends Controller
                 'started_at' => $dateStart,
                 'ended_at' => $dateEnd,
                 'category_id' => $request->category,
-                'company_id' => $request-> company,
+                'company_id' => $request-> company, 
             ];
 
         $timer->fill($data);
