@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
+use function PHPUnit\Framework\throwException;
+
 class TimerController extends Controller
 {
     /**
@@ -114,10 +116,20 @@ class TimerController extends Controller
     public function update(Request $request, Timer $timer)
     {
         Log::info($timer);
-        Log::info($request->category);
+        Log::info(gettype($request->started_at));
+        $dateStart = new Carbon($request->started_at);
+        $dateEnd = new Carbon($request->ended_at);
+
+        if($dateEnd > $dateStart){
+            $dateEnd = new Carbon($request->ended_at);
+            Log::info('true');
+        } else {
+            $dateEnd = new Carbon($request->started_at);
+            Log::info('false');
+        }
         $data = [
-                'started_at' => $request->started_at,
-                'ended_at' => $request->ended_at,
+                'started_at' => $dateStart,
+                'ended_at' => $dateEnd,
                 'category_id' => $request->category,
                 'company_id' => $request-> company,
             ];

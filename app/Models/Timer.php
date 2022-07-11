@@ -6,6 +6,7 @@ use Attribute;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 
 class Timer extends Model
 {
@@ -41,8 +42,15 @@ class Timer extends Model
         $dateStart = new Carbon($this->started_at);
         $dateEnd = new Carbon($this->ended_at);
 
+        //Log::info($dateStart);
+        //Log::info(gettype($dateStart));
+        
+
         // get the difference in minutes
         $totalSpentMinutes = $dateEnd->diffInMinutes($dateStart);
+        
+
+        //Log::info($totalSpentMinutes);
 
         // display the hours spent only if it's up to 1hour
         if(($totalSpentMinutes / 60) >= 1){

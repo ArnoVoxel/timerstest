@@ -49,6 +49,9 @@
                 <b-button variant="danger" type="submit" @click.prevent="onDelete(infoDelete)">Confirmer</b-button>
             </b-alert>
 
+            <p v-if="errors != null">{{ errors.started_at}}</p>
+            <p v-else></p>
+
             <b-form >
                 <b-table
                 class="mt-3"
@@ -138,7 +141,8 @@ import Multiselect from 'vue-multiselect';
                         return{
                             errors: {
                                 'category': null,
-                                'company': null
+                                'company': null,
+                                'ended_at': null,
                             },
                             timePick: [],
                             infoDelete: {
@@ -152,7 +156,6 @@ import Multiselect from 'vue-multiselect';
                                 companies: [],
                             },
                             form :{
-                                started_at: null,
                                 category : null,
                                 company : null,
                             },
@@ -256,6 +259,8 @@ import Multiselect from 'vue-multiselect';
                             // reverse the value of boolean for timers.isEdit on specific row
                             data.isEdit = !this.timers[data.index].isEdit;
                             this.$set(this.timers[data.index], 'isEdit', data.isEdit);
+
+                            // preselected values from the selected row in the table
                             this.formUpdate.category = {id:data.item.category_id,
                                                         label:data.item.category_label};
                             this.formUpdate.company = {id:data.item.company_id,
@@ -264,8 +269,8 @@ import Multiselect from 'vue-multiselect';
                             this.formUpdate.ended_at = data.item.ended_at;
                             this.timePick.time = data.item.started_at.split(' ').splice(1, 1).toString();
                             this.timePick.timeEnd = data.item.ended_at.split(' ').splice(1, 1).toString();
-                            console.log(data);
-                            console.log(this.formUpdate);
+                            // console.log(data);
+                            // console.log(this.formUpdate);
                         },
                         getItems(){
                             this.$axios.get('http://127.0.0.1:8000/api/timers')
@@ -302,9 +307,15 @@ import Multiselect from 'vue-multiselect';
                                 });
                         },
                         onSubmit() {
+                            console.log(this.form);
+
                                 this.$axios.post('http://127.0.0.1:8000/api/timers', this.form)
                                     .then(() => {
                                         this.getItems();
+                                        this.form = {
+                                            category : null,
+                                            company : null,
+                                        };
                                         this.errors = {
                                             'category' : null,
                                             'company' : null
@@ -321,13 +332,22 @@ import Multiselect from 'vue-multiselect';
                         },
                         onUpdate(data){
 
-                            if(this.formUpdate.started_at.length > 10){
+                            console.log(this.formUpdate.started_at.length);
+                            console.log(this.formUpdate.ended_at.length);
+                            console.log(this.timePick.time);
+
+                            if(this.formUpdate.started_at.length == 16){
+                                console.log('inside started = 16');
                                 this.started_at_date = this.formUpdate.started_at;
+                                
                             } else {
+                                console.log('inside started != 16');
                                 this.started_at_date = this.formUpdate.started_at+" "+this.timePick.time;
                             }
 
-                            if(this.formUpdate.ended_at.length > 10){
+                            console.log(this.started_at_date);
+
+                            if(this.formUpdate.ended_at.length == 16){
                                 this.ended_at_date = this.formUpdate.ended_at;
                             } else {
                                 this.ended_at_date = this.formUpdate.ended_at+" "+this.timePick.timeEnd;
@@ -341,15 +361,20 @@ import Multiselect from 'vue-multiselect';
                                 'company' : this.formUpdate.company.id,
                             };
 
-                            console.log(this.formUpdate);
-                            console.log(this.timePick.time);
-                            console.log(this.timePick.timeEnd);
 
                             this.$axios.put('http://127.0.0.1:8000/api/timers/update/'+data.item.id, this.formUpdate)
                                 .then(() => {
                                     this.getItems();
+                                    this.formUpdate={
+                                        user_id: null,
+                                        started_at: null,
+                                        ended_at: null,
+                                        category : null,
+                                        company : null,
+                                    };
                                 })
-                                .catch((error) => console.log(error));
+                                .catch((error) => {console.log(error.response.data.errors);
+                                                        this.errors = error.response.data.errors});
                             
                             data.item.company_name = this.timers[data.index].company_name;
                         },
