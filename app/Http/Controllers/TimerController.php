@@ -129,14 +129,14 @@ class TimerController extends Controller
         $dateStart = new Carbon($request->started_at);
         $dateEnd = new Carbon($request->ended_at);
 
-        // if the ended_at is too big, it takes the value of the started_at
-        if($dateEnd > $dateStart){
-            $dateEnd = new Carbon($request->ended_at);
-            //Log::info('true');
-        } else {
-            $dateEnd = new Carbon($request->started_at);
-            //Log::info('false');
-        }
+        // // if the ended_at is too big, it takes the value of the started_at
+        // if($dateEnd > $dateStart){
+        //     $dateEnd = new Carbon($request->ended_at);
+        //     //Log::info('true');
+        // } else {
+        //     $dateEnd = new Carbon($request->started_at);
+        //     //Log::info('false');
+        // }
 
         $data = [
                 'started_at' => $dateStart,

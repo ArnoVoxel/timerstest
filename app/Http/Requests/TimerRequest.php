@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\DateRange;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Log;
 
@@ -27,12 +28,8 @@ class TimerRequest extends FormRequest
         return [
             'company' => 'required',
             'category' => 'required',
-            'ended_at' => [
-                function($attribute, $value, $fail){
-                    Log::info('Request');
-                    Log::info($value);
-                }
-            ]
+            'started_at' => 'date_format: Y-m-d H:i',
+            'ended_at' => ['date_format: Y-m-d H:i' , new DateRange()]
         ];
     }
 }
