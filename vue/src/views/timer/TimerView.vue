@@ -332,26 +332,8 @@ import Multiselect from 'vue-multiselect';
                         },
                         onUpdate(data){
 
-                            console.log(this.formUpdate.started_at.length);
-                            console.log(this.formUpdate.ended_at.length);
-                            console.log(this.timePick.time);
-
-                            if(this.formUpdate.started_at.length == 16){
-                                console.log('inside started = 16');
-                                this.started_at_date = this.formUpdate.started_at;
-                                
-                            } else {
-                                console.log('inside started != 16');
-                                this.started_at_date = this.formUpdate.started_at+" "+this.timePick.time;
-                            }
-
-                            console.log(this.started_at_date);
-
-                            if(this.formUpdate.ended_at.length == 16){
-                                this.ended_at_date = this.formUpdate.ended_at;
-                            } else {
-                                this.ended_at_date = this.formUpdate.ended_at+" "+this.timePick.timeEnd;
-                            }
+                            this.started_at_date = this.formUpdate.started_at.split(' ').splice(0, 1).toString()+" "+this.timePick.time;
+                            this.ended_at_date = this.formUpdate.ended_at.split(' ').splice(0, 1).toString()+" "+this.timePick.timeEnd;
 
                             this.formUpdate = {
                                 'user_id' : data.item.user_id,
@@ -360,7 +342,6 @@ import Multiselect from 'vue-multiselect';
                                 'category' : this.formUpdate.category.id,
                                 'company' : this.formUpdate.company.id,
                             };
-
 
                             this.$axios.put('http://127.0.0.1:8000/api/timers/update/'+data.item.id, this.formUpdate)
                                 .then(() => {

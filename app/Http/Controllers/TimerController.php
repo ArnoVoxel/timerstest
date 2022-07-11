@@ -79,7 +79,7 @@ class TimerController extends Controller
     }
 
     /**
-     * Stop all running timers
+     * Stop all running timers and count the time_spent of the last timer
      */
     public function stopTimer(Request $request)
     {
@@ -88,22 +88,7 @@ class TimerController extends Controller
         // update the time_spent column for the last timer of the user 
         $timer = Timer::where('user_id', Auth::id())->get()->last();
 
-        $startTime = new Carbon($timer->started_at);
-        $endTime = new Carbon($timer->ended_at);
-
-        // get the difference in minutes
-        $totalSpentMinutes = $endTime->diffInMinutes($startTime);
-        if(($totalSpentMinutes / 60) >= 1){
-            $hoursSpent = round($totalSpentMinutes / 60);
-            $hoursSpent = sprintf("%02d", $hoursSpent);
-        } else {
-            $hoursSpent = 0;
-        }
-
-        $time_spent = $hoursSpent.":".sprintf("%02d", $totalSpentMinutes%60);
-        Log::info($time_spent);
-
-        $timer->time_spent = $time_spent;
+        $timer->time_spent = self::getTimeSpent($timer->started_at, $timer->ended_at);
         $timer->save();
     }
 
@@ -138,27 +123,31 @@ class TimerController extends Controller
      */
     public function update(Request $request, Timer $timer)
     {
+        Log::info('update request : ');
         Log::info($timer);
-        Log::info(gettype($request->started_at));
+
         $dateStart = new Carbon($request->started_at);
         $dateEnd = new Carbon($request->ended_at);
 
+        // if the ended_at is too big, it takes the value of the started_at
         if($dateEnd > $dateStart){
             $dateEnd = new Carbon($request->ended_at);
-            Log::info('true');
+            //Log::info('true');
         } else {
             $dateEnd = new Carbon($request->started_at);
-            Log::info('false');
+            //Log::info('false');
         }
+
         $data = [
                 'started_at' => $dateStart,
                 'ended_at' => $dateEnd,
+                'time_spent' => self::getTimeSpent($request->started_at, $request->ended_at),
                 'category_id' => $request->category,
                 'company_id' => $request-> company, 
             ];
 
         $timer->fill($data);
-        Log::info($timer);
+        //Log::info($timer);
         $timer->save();
     }
 
@@ -176,5 +165,31 @@ class TimerController extends Controller
             ->where('user_id', $user_id)
             ->delete();;
 
+    }
+
+    /**
+     * It takes two dates and returns the difference in hours and minutes
+     * 
+     * @param startDate The start date of the task
+     * @param endDate The date and time when the task was completed.
+     * 
+     * @return string time spent in hours and minutes.
+     */
+    public function getTimeSpent($startDate, $endDate){
+        $startTime = new Carbon($startDate);
+        $endTime = new Carbon($endDate);
+
+        // get the difference in minutes
+        $totalSpentMinutes = $endTime->diffInMinutes($startTime);
+        if(($totalSpentMinutes / 60) >= 1){
+            $hoursSpent = round($totalSpentMinutes / 60);
+            $hoursSpent = sprintf("%02d", $hoursSpent);
+        } else {
+            $hoursSpent = 0;
+        }
+
+        $time_spent = $hoursSpent.":".sprintf("%02d", $totalSpentMinutes%60);
+
+        return $time_spent;
     }
 }

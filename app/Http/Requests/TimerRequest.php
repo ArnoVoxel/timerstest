@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Log;
 
 class TimerRequest extends FormRequest
 {
@@ -26,7 +27,12 @@ class TimerRequest extends FormRequest
         return [
             'company' => 'required',
             'category' => 'required',
-
+            'ended_at' => [
+                function($attribute, $value, $fail){
+                    Log::info('Request');
+                    Log::info($value);
+                }
+            ]
         ];
     }
 }
