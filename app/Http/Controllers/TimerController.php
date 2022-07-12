@@ -121,22 +121,13 @@ class TimerController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Timer $timer)
+    public function update(TimerRequest $request, Timer $timer)
     {
         Log::info('update request : ');
         Log::info($timer);
 
         $dateStart = new Carbon($request->started_at);
         $dateEnd = new Carbon($request->ended_at);
-
-        // // if the ended_at is too big, it takes the value of the started_at
-        // if($dateEnd > $dateStart){
-        //     $dateEnd = new Carbon($request->ended_at);
-        //     //Log::info('true');
-        // } else {
-        //     $dateEnd = new Carbon($request->started_at);
-        //     //Log::info('false');
-        // }
 
         $data = [
                 'started_at' => $dateStart,
@@ -163,7 +154,7 @@ class TimerController extends Controller
 
         Timer::where('id', $id)
             ->where('user_id', $user_id)
-            ->delete();;
+            ->delete();
 
     }
 

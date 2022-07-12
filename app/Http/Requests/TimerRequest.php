@@ -3,7 +3,9 @@
 namespace App\Http\Requests;
 
 use App\Rules\DateRange;
+use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
 class TimerRequest extends FormRequest
@@ -28,8 +30,10 @@ class TimerRequest extends FormRequest
         return [
             'company' => 'required',
             'category' => 'required',
-            'started_at' => 'date_format: Y-m-d H:i',
-            'ended_at' => ['date_format: Y-m-d H:i' , new DateRange()]
+            'started_at' => 'date_format:"Y-m-d H:i"',
+            'ended_at' => [
+                'date_format:"Y-m-d H:i"',
+                'after:started_at']
         ];
     }
 }

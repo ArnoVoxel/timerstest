@@ -90,6 +90,17 @@
                         <span v-else>{{data.value}}</span>
                     </template>
 
+                    <template #cell(time_spent)="data" >
+                        <b-input-group v-if="data.item.isEdit">
+                        <b-row>
+                            <b-col cols="12">
+                                <b-form-timepicker v-model="formUpdate.time_spent" size="sm" @change="onChangeTimeSpent"></b-form-timepicker>
+                            </b-col>
+                        </b-row>
+                        </b-input-group>
+                        <span v-else>{{data.value}}</span>
+                    </template>
+
                     <template #cell(company_label)="data">
                         <multiselect v-if="data.item.isEdit" v-model="formUpdate.company" label="label" :options="options.companies" ></multiselect>
                         <span v-else>{{data.value}}</span>
@@ -163,6 +174,7 @@ import Multiselect from 'vue-multiselect';
                                 user_id: null,
                                 started_at: null,
                                 ended_at: null,
+                                time_spent: null,
                                 category : null,
                                 company : null,
                             },
@@ -201,7 +213,7 @@ import Multiselect from 'vue-multiselect';
                                     key: 'time_spent',
                                     label: 'Time Spent',
                                     type: 'date',
-                                    editable: false
+                                    editable: true
                                 },
                                 {
                                     key: 'company_label',
@@ -267,10 +279,10 @@ import Multiselect from 'vue-multiselect';
                                                         label:data.item.company_label};
                             this.formUpdate.started_at = data.item.started_at;
                             this.formUpdate.ended_at = data.item.ended_at;
+                            this.formUpdate.time_spent = data.item.time_spent;
+
                             this.timePick.time = data.item.started_at.split(' ').splice(1, 1).toString();
                             this.timePick.timeEnd = data.item.ended_at.split(' ').splice(1, 1).toString();
-                            // console.log(data);
-                            // console.log(this.formUpdate);
                         },
                         getItems(){
                             this.$axios.get('http://127.0.0.1:8000/api/timers')
@@ -358,6 +370,10 @@ import Multiselect from 'vue-multiselect';
                                                         this.errors = error.response.data.errors});
                             
                             data.item.company_name = this.timers[data.index].company_name;
+                        },
+                        onChangeTimeSpent(){
+                            this.timePick.timeEnd = this.timePick.time ;
+                            console.log(this.timePick.timeEnd);
                         },
                         onDelete(data){
                             this.$axios.delete('http://127.0.0.1:8000/api/timers/delete/'+data.id+'/'+data.user_id)
