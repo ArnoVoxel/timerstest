@@ -30,9 +30,9 @@ class TimerRequest extends FormRequest
         return [
             'company' => 'required',
             'category' => 'required',
-            'started_at' => 'date_format:"Y-m-d H:i"',
+            'started_at' => 'date',
             'ended_at' => [
-                'date_format:"Y-m-d H:i"',
+                'date',
                 'after:started_at']
         ];
     }

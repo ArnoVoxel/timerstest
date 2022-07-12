@@ -57,6 +57,7 @@ class TimerController extends Controller
      */
     public function store(TimerRequest $request)
     {
+        Log::info('store');
         Log::info($request->__toString());
 
         $timer = new Timer();
@@ -128,17 +129,46 @@ class TimerController extends Controller
 
         $dateStart = new Carbon($request->started_at);
         $dateEnd = new Carbon($request->ended_at);
+        $timeSpent = self::getTimeSpent($request->started_at, $request->ended_at);
+
+        $newTimeSpent = $request->time_spent;
+
+        // get the old attributes to test
+        $oldStartedAt = new Carbon($timer->started_at);
+        $oldEndedAt = new Carbon($timer->ended_at);
+        $oldTimeSpent = $timer->time_spent;
+        $oldCategoryId = $timer->category_id;
+        $oldCompanyId = $timer->company_id;
+
+        Log::info('update $dateStart $dateEnd');
+        Log::info($dateStart);
+        Log::info($dateEnd);
+
+
+        // if the time_spent is changed but not ended_at
+        if($newTimeSpent != self::getTimeSpent($request->started_at, $request->ended_at) && $oldEndedAt == $dateEnd){
+            Log::info('update timeSpent + ended_at before');
+            Log::info($dateEnd);
+            $addTime = strtotime($newTimeSpent, 0) / 60;
+            //Log::info($addTime);
+
+            $dateEnd = new Carbon($timer->started_at);
+            $dateEnd->addMinutes($addTime);
+            Log::info('update timeSpent + ended_at after');
+            Log::info($dateEnd);
+            $timeSpent = $newTimeSpent;
+        }
 
         $data = [
                 'started_at' => $dateStart,
                 'ended_at' => $dateEnd,
-                'time_spent' => self::getTimeSpent($request->started_at, $request->ended_at),
+                'time_spent' => $timeSpent,
                 'category_id' => $request->category,
                 'company_id' => $request-> company, 
             ];
 
         $timer->fill($data);
-        //Log::info($timer);
+        Log::info($timer);
         $timer->save();
     }
 

@@ -351,9 +351,12 @@ import Multiselect from 'vue-multiselect';
                                 'user_id' : data.item.user_id,
                                 'started_at' : this.started_at_date,
                                 'ended_at' : this.ended_at_date,
+                                'time_spent': this.formUpdate.time_spent,
                                 'category' : this.formUpdate.category.id,
                                 'company' : this.formUpdate.company.id,
                             };
+
+                            console.log(this.formUpdate);
 
                             this.$axios.put('http://127.0.0.1:8000/api/timers/update/'+data.item.id, this.formUpdate)
                                 .then(() => {
