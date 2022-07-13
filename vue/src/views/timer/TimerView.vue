@@ -34,12 +34,19 @@
         <div class="overflow-auto">
 
             <!-- input search to filter the content of the table -->
-            <b-input-group>
-                <b-form-input v-model="keyword" placeholder="Rechercher" type="text" @keydown="getPagination()"></b-form-input>
-                <b-input-group-text slot="append">
-                    <b-btn :disabled="!keyword" variant="link" @click="keyword = '', getPagination()">reset</b-btn>
-                </b-input-group-text>
-            </b-input-group>
+            <b-form>
+                <b-row>
+                    <b-dropdown>
+                        <b-form-checkbox-group  v-model="searchFilter.category" value-field="id" text-field="label" :options="options.categories"></b-form-checkbox-group>
+                            <b-input-group>
+                                <b-form-input v-model="keyword" placeholder="Rechercher une entreprise" type="text" @keydown="getPagination()"></b-form-input>
+                                <b-input-group-text slot="append">
+                                    <b-btn :disabled="!keyword" variant="link" @click="keyword = '', getPagination()">reset</b-btn>
+                                </b-input-group-text>
+                            </b-input-group>
+                        </b-dropdown>
+                </b-row>
+            </b-form>
 
             <b-alert v-model="showDismissibleAlert" variant="danger" dismissible>
                 Suppression du timer {{ infoDelete.id }} ?
@@ -52,8 +59,7 @@
                 id="myTable"
                 ref="myTable"
                 striped bordered hover 
-                :items="filtered" 
-                :keyword="keyword"
+                :items="timers" 
                 :fields="fields"
                 >
                     <template #cell(started_at)="data">
@@ -178,6 +184,10 @@ import Multiselect from 'vue-multiselect';
                                 category : null,
                                 company : null,
                             },
+                            searchFilter:{
+                                category: [],
+                                company: null,
+                            },
                             data:{},
                             pagination: {
                                 currentPage: 1,
@@ -284,6 +294,7 @@ import Multiselect from 'vue-multiselect';
                                 .then((res)=>{
                                     this.timers = res.data.data;
                                     this.data = res.data;
+                                    
                                     for(let i = 0; i < res.data.data.length; i++){
                                         this.timePick[i] = {'time' : res.data.data[i]['started_at'].split(' ').splice(1, 1).toString()};
                                         if(res.data.data[i]['ended_at'] != null){
@@ -297,6 +308,7 @@ import Multiselect from 'vue-multiselect';
                                 .then((res)=>{
                                     this.options.categories = res.data.data;
                                     this.fields.categories_label = res.data.data.label;
+                                    console.log(this.searchFilter);
                                 });
                         },
                         getCompanies(){
@@ -391,6 +403,7 @@ import Multiselect from 'vue-multiselect';
                         },
                         getPage(){
                             console.log(this.keyword);
+                            console.log(this.searchFilter);
 
                             // console.log('this.data : ');
                             // console.log(this.data.data);
