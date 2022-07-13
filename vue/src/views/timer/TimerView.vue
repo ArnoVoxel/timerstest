@@ -35,12 +35,9 @@
 
             <!-- input search to filter the content of the table -->
             <b-input-group>
-                <b-form-input v-model="keyword" placeholder="Rechercher" type="text"></b-form-input>
+                <b-form-input v-model="keyword" placeholder="Rechercher" type="text" @keydown="getPagination()"></b-form-input>
                 <b-input-group-text slot="append">
-                    <b-btn :disabled="!keyword" variant="link" @click="keyword = ''">search BDD(TODO)</b-btn>
-                </b-input-group-text>
-                <b-input-group-text slot="append">
-                    <b-btn :disabled="!keyword" variant="link" @click="keyword = ''">reset</b-btn>
+                    <b-btn :disabled="!keyword" variant="link" @click="keyword = '', getPagination()">reset</b-btn>
                 </b-input-group-text>
             </b-input-group>
 
@@ -48,9 +45,6 @@
                 Suppression du timer {{ infoDelete.id }} ?
                 <b-button variant="danger" type="submit" @click.prevent="onDelete(infoDelete)">Confirmer</b-button>
             </b-alert>
-
-            <p v-if="errors != null">{{ errors.started_at}}</p>
-            <p v-else></p>
 
             <b-form >
                 <b-table
@@ -71,6 +65,8 @@
                             <b-col cols="12">
                                 <b-form-timepicker v-model="timePick.time" size="sm" ></b-form-timepicker>
                             </b-col>
+                            <p class="text-danger" v-if="errors != null">{{ errors.started_at}}</p>
+                            <p v-else></p>
                         </b-row>
                         </b-input-group>
                         <span v-else>{{data.value}}</span>
@@ -78,25 +74,27 @@
 
                     <template #cell(ended_at)="data">
                         <b-input-group v-if="data.item.isEdit">
-                        <b-row>
-                            <b-col cols="12">
-                                <b-form-datepicker  v-model="formUpdate.ended_at"></b-form-datepicker>
-                            </b-col>
-                            <b-col cols="12">
-                                <b-form-timepicker v-model="timePick.timeEnd" size="sm" ></b-form-timepicker>
-                            </b-col>
-                        </b-row>
+                            <b-row>
+                                <b-col cols="12">
+                                    <b-form-datepicker  v-model="formUpdate.ended_at"></b-form-datepicker>
+                                </b-col>
+                                <b-col cols="12">
+                                    <b-form-timepicker v-model="timePick.timeEnd" size="sm" ></b-form-timepicker>
+                                </b-col>
+                                <p class="text-danger" v-if="errors != null">{{ errors.ended_at}}</p>
+                                <p v-else></p>
+                            </b-row>
                         </b-input-group>
                         <span v-else>{{data.value}}</span>
                     </template>
 
                     <template #cell(time_spent)="data" >
                         <b-input-group v-if="data.item.isEdit">
-                        <b-row>
-                            <b-col cols="12">
-                                <b-form-timepicker v-model="formUpdate.time_spent" size="sm" @change="onChangeTimeSpent"></b-form-timepicker>
-                            </b-col>
-                        </b-row>
+                            <b-row>
+                                <b-col cols="12">
+                                    <b-form-timepicker v-model="formUpdate.time_spent" size="sm" ></b-form-timepicker>
+                                </b-col>
+                            </b-row>
                         </b-input-group>
                         <span v-else>{{data.value}}</span>
                     </template>
@@ -114,10 +112,10 @@
                     <template #cell(modify)="data" >
                         <b-button v-if="!data.item.isEdit" variant="warning" @click="editRowHandler(data)">Edit</b-button>
                         <b-row v-else class="d-flew flex-row">
-                                <b-input-group v-if="data.item.isEdit" align-self="center">
-                                    <b-button  variant="warning" type="submit" @click.prevent="onUpdate(data)">Done</b-button >
-                                    <b-button  variant="warning" type="submit" @click.prevent="data.item.isEdit=false">Cancel</b-button >
-                                </b-input-group>
+                            <b-input-group v-if="data.item.isEdit" align-self="center">
+                                <b-button  variant="warning" type="submit" @click.prevent="onUpdate(data)">Done</b-button >
+                                <b-button  variant="warning" type="submit" @click.prevent="data.item.isEdit=false">Cancel</b-button >
+                            </b-input-group>
                         </b-row>
                     </template>
 
@@ -153,7 +151,9 @@ import Multiselect from 'vue-multiselect';
                             errors: {
                                 'category': null,
                                 'company': null,
+                                'started_at': null,
                                 'ended_at': null,
+                                'time_spent': null,
                             },
                             timePick: [],
                             infoDelete: {
@@ -188,12 +188,6 @@ import Multiselect from 'vue-multiselect';
                                 {
                                     key: 'id',
                                     label: 'Timer Id',
-                                    type: 'integer',
-                                    editable: false,
-                                },
-                                {
-                                    key: 'user_id',
-                                    label: 'User Id',
                                     type: 'integer',
                                     editable: false,
                                 },
@@ -246,19 +240,20 @@ import Multiselect from 'vue-multiselect';
                             return this.timers.length;
                         },
                         filtered(){
-                            return this.keyword ? 
-                            this.timers.filter(criteria =>
-                                criteria.company_label.toLowerCase().includes(this.keyword.toLowerCase()) ||
-                                criteria.category_label.toLowerCase().includes(this.keyword.toLowerCase()))
-                            : this.timers
+                            // return this.keyword ? 
+                            // this.timers.filter(criteria =>
+                            //     criteria.company_label.toLowerCase().includes(this.keyword.toLowerCase()) ||
+                            //     criteria.category_label.toLowerCase().includes(this.keyword.toLowerCase()))
+                            // : this.timers
+                            return this.timers;
                         },
                     },
                     methods: {
                         getPagination(){
-                            let url = "http://127.0.0.1:8000/api/timers?page=" + this.pagination.currentPage;
+                            //let url = "http://127.0.0.1:8000/api/timers?page=" + this.pagination.currentPage;
 
                             this.$axios
-                                .get(url)
+                                .get("http://127.0.0.1:8000/api/timers?page=" + this.pagination.currentPage+"&keyword="+ this.keyword)
                                 .then((response) => {
                                     this.timers = response.data.data;
                                     this.pagination.nbInvoices = response.data.total;
@@ -330,7 +325,9 @@ import Multiselect from 'vue-multiselect';
                                         };
                                         this.errors = {
                                             'category' : null,
-                                            'company' : null
+                                            'company' : null,
+                                            'ended_at' : null,
+                                            'time_spent' : null,
                                         };
                                     })
                                     .catch((error) => {console.log(error.response.data.errors);
@@ -368,15 +365,17 @@ import Multiselect from 'vue-multiselect';
                                         category : null,
                                         company : null,
                                     };
+                                    this.errors = {
+                                            'category' : null,
+                                            'company' : null,
+                                            'ended_at' : null,
+                                            'time_spent' : null,
+                                        };
                                 })
                                 .catch((error) => {console.log(error.response.data.errors);
                                                         this.errors = error.response.data.errors});
                             
                             data.item.company_name = this.timers[data.index].company_name;
-                        },
-                        onChangeTimeSpent(){
-                            this.timePick.timeEnd = this.timePick.time ;
-                            console.log(this.timePick.timeEnd);
                         },
                         onDelete(data){
                             this.$axios.delete('http://127.0.0.1:8000/api/timers/delete/'+data.id+'/'+data.user_id)
@@ -391,13 +390,15 @@ import Multiselect from 'vue-multiselect';
                             this.showDismissibleAlert = !this.showDismissibleAlert;
                         },
                         getPage(){
-                            console.log('this.data : ');
-                            console.log(this.data.data);
-                            console.log(JSON.stringify(this.data.data));
+                            console.log(this.keyword);
+
+                            // console.log('this.data : ');
+                            // console.log(this.data.data);
+                            // console.log(JSON.stringify(this.data.data));
     
-                            console.log('this.timers : ');
-                            console.log(this.timers);
-                            console.log(JSON.stringify(this.timers));
+                            // console.log('this.timers : ');
+                            // console.log(this.timers);
+                            // console.log(JSON.stringify(this.timers));
 
                             // console.log('this.errors : ');
                             // console.log(this.errors);

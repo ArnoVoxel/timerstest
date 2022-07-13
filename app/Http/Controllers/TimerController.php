@@ -23,12 +23,14 @@ class TimerController extends Controller
      */
     public function index(Request $request)
     {
-        /* $data = Timer::where('user_id', Auth::id())->orderBy('id', 'DESC')->paginate(4);
-        return TimerResource::collection($data); */
+        Log::info('index :');
+        Log::info($request);
 
-        //$this->authorize('viewAny', Timer::class);
+        $timersQuery = Timer::with(['company', 'category'])->where('user_id', Auth::id())->orderBy('started_at', 'DESC');
 
-        $timersQuery = Timer::with(['company', 'category'])->where('user_id', Auth::id())->orderBy('id', 'DESC');
+        if($request->has('keyword') && $request->keyword != ''){
+            $timersQuery = Timer::with(['company', 'category'])->where('user_id', Auth::id())->join('companies', 'timers.company_id', '=', 'companies.id')->where('companies.label', 'LIKE', "%{$request->keyword}%")->orderBy('started_at', 'DESC');
+        }
         $timers = $timersQuery->paginate(6, ['*'], 'page', $request['page'] ?? 1);
 
         return new JsonResource([
@@ -140,23 +142,16 @@ class TimerController extends Controller
         $oldCategoryId = $timer->category_id;
         $oldCompanyId = $timer->company_id;
 
-        Log::info('update $dateStart $dateEnd');
-        Log::info($dateStart);
-        Log::info($dateEnd);
-
 
         // if the time_spent is changed but not ended_at
         if($newTimeSpent != self::getTimeSpent($request->started_at, $request->ended_at) && $oldEndedAt == $dateEnd){
-            Log::info('update timeSpent + ended_at before');
-            Log::info($dateEnd);
-            $addTime = strtotime($newTimeSpent, 0) / 60;
-            //Log::info($addTime);
+            $addMinutes = substr($newTimeSpent, 3, 2);
+            $addHours = substr($newTimeSpent, 0, 2);
 
             $dateEnd = new Carbon($timer->started_at);
-            $dateEnd->addMinutes($addTime);
-            Log::info('update timeSpent + ended_at after');
-            Log::info($dateEnd);
-            $timeSpent = $newTimeSpent;
+            $dateEnd->addMinutes($addMinutes)->addHours($addHours);
+
+            $timeSpent = $addHours.":".$addMinutes;
         }
 
         $data = [
@@ -202,14 +197,14 @@ class TimerController extends Controller
 
         // get the difference in minutes
         $totalSpentMinutes = $endTime->diffInMinutes($startTime);
+
         if(($totalSpentMinutes / 60) >= 1){
             $hoursSpent = round($totalSpentMinutes / 60);
-            $hoursSpent = sprintf("%02d", $hoursSpent);
         } else {
             $hoursSpent = 0;
         }
 
-        $time_spent = $hoursSpent.":".sprintf("%02d", $totalSpentMinutes%60);
+        $time_spent = sprintf("%02d", $hoursSpent).":".sprintf("%02d", $totalSpentMinutes%60);
 
         return $time_spent;
     }

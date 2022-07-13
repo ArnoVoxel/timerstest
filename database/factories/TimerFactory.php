@@ -34,7 +34,7 @@ class TimerFactory extends Factory
             $hoursSpent = 0;
         }
 
-        $time_spent = $hoursSpent.":".sprintf("%02d", $totalSpentMinutes%60);
+        $time_spent = sprintf("%02d", $hoursSpent).":".sprintf("%02d", $totalSpentMinutes%60);
 
         return [
             'started_at' => $startTime->toDateTimeString($unitPrecision = 'minute'),
