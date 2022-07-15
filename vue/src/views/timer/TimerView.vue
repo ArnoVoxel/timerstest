@@ -59,7 +59,7 @@
                                 </b-col>
                             </b-row>
                     <b-button class="mt-3 col-12 col-md-6" type="submit" variant="primary">Search</b-button>
-                    <b-button class="mt-3 col-12 col-md-6" type="button" variant="warning">Reset</b-button>
+                    <b-button class="mt-3 col-12 col-md-6" type="button" variant="warning" @click="getReset">Reset</b-button>
                         </b-form>
                     </b-col>
                 </b-row>
@@ -202,10 +202,11 @@ import Multiselect from 'vue-multiselect';
                                 company : null,
                             },
                             searchFilter:{
+                                page: 1,
                                 category: [],
                                 company: null,
-                                from: null,
-                                to: null,
+                                from: "",
+                                to: "",
                             },
                             data:{},
                             pagination: {
@@ -284,15 +285,27 @@ import Multiselect from 'vue-multiselect';
                             if(this.searchFilter.company == null){
                                 this.searchFilter.company = '';
                             }
+                            this.searchFilter.page = this.pagination.currentPage;
+                            console.log(this.searchFilter);
 
                             this.$axios
-                                .get("http://127.0.0.1:8000/api/timers?page=" + this.pagination.currentPage + "&company=" + this.searchFilter.company + "&category=" + this.searchFilter.category)
+                                .get("http://127.0.0.1:8000/api/timers?page=" + this.pagination.currentPage + "&company=" + this.searchFilter.company + "&category=" + this.searchFilter.category + "&from=" + this.searchFilter.from + "&to=" + this.searchFilter.to)
                                 .then((response) => {
                                     this.timers = response.data.data;
                                     this.pagination.nbInvoices = response.data.total;
                                     this.pagination.perPage = response.data.per_page;
                                 })
                                 .catch((error) => console.log(error));
+                        },
+                        getReset(){
+                            this.searchFilter = {
+                                page: 1,
+                                category: [],
+                                company: null,
+                                from: "",
+                                to: "",
+                            }
+                            this.getPagination();
                         },
                         // change the value on edit button to toggle editable inputs
                         editRowHandler(data){

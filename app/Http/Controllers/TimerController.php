@@ -26,16 +26,33 @@ class TimerController extends Controller
         Log::info('index :');
         Log::info($request);
 
+        $company = $request->input('company');
+        $category = $request->input('category');
+        $dateFrom = $request->input('from');
+        $dateTo = $request->input('to');
+
+        Log::info($company);
+
         $timersQuery = Timer::with(['company', 'category'])->where('user_id', Auth::id())->orderBy('started_at', 'DESC');
 
-        if($request->company != '' || $request->company != null || $request->company != 'null'){
-            $timersQuery = Timer::with(['company', 'category'])->where('user_id', Auth::id())->join('companies', 'timers.company_id', '=', 'companies.id')->where('companies.label', 'LIKE', "%{$request->company}%")->orderBy('started_at', 'DESC');
-        }
+        $timersQuery->when($category, function($query) use ($category){
+            $arrayRequestCategory = explode(',', $category);
+            Log::info($arrayRequestCategory);
+            return $query->whereIn('category_id', $arrayRequestCategory);
+        });
 
-        if($request->category != null){
-            $arrayRequestCategory = explode(',', $request->category);
-            $timersQuery = Timer::with(['company', 'category'])->where('user_id', Auth::id())->whereIn('category_id', $arrayRequestCategory)->orderBy('started_at', 'DESC');
-        }
+        $timersQuery->when($company, function($query) use ($company){
+            return $query->join('companies', 'timers.company_id', '=', 'companies.id')->where('companies.label', 'LIKE', "%{$company}%");
+        });
+
+        $timersQuery->when($dateFrom, function($query) use ($dateFrom){
+            return $query->where('started_at', '>', $dateFrom);
+        });
+
+        $timersQuery->when($dateTo, function($query) use ($dateTo){
+            return $query->where('ended_at', '<', $dateTo);
+        });
+
         $timers = $timersQuery->paginate(6, ['*'], 'page', $request['page'] ?? 1);
 
         return new JsonResource([
