@@ -30,23 +30,40 @@
     </div>
 
     <div>
-        <h2 class="mt-3">Liste des timers</h2>
         <div class="overflow-auto">
 
-            <!-- input search to filter the content of the table -->
-            <b-form>
-                <b-row>
-                    <b-dropdown>
-                        <b-form-checkbox-group  v-model="searchFilter.category" value-field="id" text-field="label" :options="options.categories"></b-form-checkbox-group>
-                            <b-input-group>
-                                <b-form-input v-model="keyword" placeholder="Rechercher une entreprise" type="text" @keydown="getPagination()"></b-form-input>
-                                <b-input-group-text slot="append">
-                                    <b-btn :disabled="!keyword" variant="link" @click="keyword = '', getPagination()">reset</b-btn>
-                                </b-input-group-text>
-                            </b-input-group>
-                        </b-dropdown>
+            <!-- dropdown menu to filter the content of the table -->
+            <b-button class="mt-3" v-b-toggle.collapse-1 variant="primary">filters</b-button>
+            <b-collapse id="collapse-1">
+                <b-row class="mt-3">
+                    <b-col>
+                        <b-form @submit.prevent="getPagination">
+                            <b-row>
+                                <b-col>
+                                    <b-form-checkbox-group  v-model="searchFilter.category" value-field="id" text-field="label" :options="options.categories"></b-form-checkbox-group>
+                                </b-col>
+                                <b-col>
+                                    <b-input-group>
+                                        <b-form-input v-model="searchFilter.company" placeholder="search company name" type="text"></b-form-input>
+                                    </b-input-group>
+                                </b-col>
+                            </b-row>
+                            <b-row class="mt-3">
+                                <b-col>
+                                    <p>from :</p>
+                                    <b-input v-model="searchFilter.from" type="date"></b-input>
+                                </b-col>
+                                <b-col>
+                                    <p>to :</p>
+                                    <b-input v-model="searchFilter.to" type="date"></b-input>
+                                </b-col>
+                            </b-row>
+                    <b-button class="mt-3 col-12 col-md-6" type="submit" variant="primary">Search</b-button>
+                    <b-button class="mt-3 col-12 col-md-6" type="button" variant="warning">Reset</b-button>
+                        </b-form>
+                    </b-col>
                 </b-row>
-            </b-form>
+            </b-collapse>
 
             <b-alert v-model="showDismissibleAlert" variant="danger" dismissible>
                 Suppression du timer {{ infoDelete.id }} ?
@@ -187,6 +204,8 @@ import Multiselect from 'vue-multiselect';
                             searchFilter:{
                                 category: [],
                                 company: null,
+                                from: null,
+                                to: null,
                             },
                             data:{},
                             pagination: {
@@ -262,8 +281,12 @@ import Multiselect from 'vue-multiselect';
                         getPagination(){
                             //let url = "http://127.0.0.1:8000/api/timers?page=" + this.pagination.currentPage;
 
+                            if(this.searchFilter.company == null){
+                                this.searchFilter.company = '';
+                            }
+
                             this.$axios
-                                .get("http://127.0.0.1:8000/api/timers?page=" + this.pagination.currentPage+"&keyword="+ this.keyword)
+                                .get("http://127.0.0.1:8000/api/timers?page=" + this.pagination.currentPage + "&company=" + this.searchFilter.company + "&category=" + this.searchFilter.category)
                                 .then((response) => {
                                     this.timers = response.data.data;
                                     this.pagination.nbInvoices = response.data.total;

@@ -28,8 +28,13 @@ class TimerController extends Controller
 
         $timersQuery = Timer::with(['company', 'category'])->where('user_id', Auth::id())->orderBy('started_at', 'DESC');
 
-        if($request->has('keyword') && $request->keyword != ''){
-            $timersQuery = Timer::with(['company', 'category'])->where('user_id', Auth::id())->join('companies', 'timers.company_id', '=', 'companies.id')->where('companies.label', 'LIKE', "%{$request->keyword}%")->orderBy('started_at', 'DESC');
+        if($request->company != '' || $request->company != null || $request->company != 'null'){
+            $timersQuery = Timer::with(['company', 'category'])->where('user_id', Auth::id())->join('companies', 'timers.company_id', '=', 'companies.id')->where('companies.label', 'LIKE', "%{$request->company}%")->orderBy('started_at', 'DESC');
+        }
+
+        if($request->category != null){
+            $arrayRequestCategory = explode(',', $request->category);
+            $timersQuery = Timer::with(['company', 'category'])->where('user_id', Auth::id())->whereIn('category_id', $arrayRequestCategory)->orderBy('started_at', 'DESC');
         }
         $timers = $timersQuery->paginate(6, ['*'], 'page', $request['page'] ?? 1);
 
