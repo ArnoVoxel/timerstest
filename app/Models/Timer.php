@@ -35,35 +35,6 @@ class Timer extends Model
         'ended_at'=> 'datetime:Y-m-d H:i',
     ];
 
-    /* public function getTimeSpentAttribute()
-    {
-        if($this->ended_at === null){
-            return null;
-        }
-        $dateStart = new Carbon($this->started_at);
-        $dateEnd = new Carbon($this->ended_at);
-
-        //Log::info($dateStart);
-        //Log::info(gettype($dateStart));
-        
-
-        // get the difference in minutes
-        $totalSpentMinutes = $dateEnd->diffInMinutes($dateStart);
-        
-
-        //Log::info($totalSpentMinutes);
-
-        // display the hours spent only if it's up to 1hour
-        if(($totalSpentMinutes / 60) >= 1){
-            $hoursSpent = round($totalSpentMinutes / 60);
-            $hoursSpent = sprintf("%02d", $hoursSpent);
-        } else {
-            $hoursSpent = 0;
-        }
-
-        return $hoursSpent.":".sprintf("%02d", $totalSpentMinutes%60);
-    } */
-
     public function user()
     {
         return $this->belongsTo(User::class);
