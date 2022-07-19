@@ -78,6 +78,11 @@ class TimerControllerTest extends TestCase
     }
 
     
+    /**
+     * > We're testing that the response from the API is a JSON object with a data property that is an
+     * array of objects with the properties id, started_at, ended_at, category_id, user_id, company_id,
+     * and ticket
+     */
     public function test_data_from_json()
     {
         self::setConnectedUser(rand(4,5));

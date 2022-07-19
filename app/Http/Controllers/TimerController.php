@@ -81,7 +81,7 @@ class TimerController extends Controller
      */
     public function store(TimerRequest $request)
     {
-        Log::info('store');
+        Log::info('timer store');
         Log::info($request->__toString());
 
         $timer = new Timer();
