@@ -35,6 +35,8 @@ class Timer extends Model
         'ended_at'=> 'datetime:Y-m-d H:i',
     ];
 
+    // relations
+
     public function user()
     {
         return $this->belongsTo(User::class);

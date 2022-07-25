@@ -5,6 +5,7 @@ namespace Database\Factories;
 use App\Models\Category;
 use App\Models\Company;
 use App\Models\Ticket;
+use App\Models\Timer;
 use App\Models\User;
 use Carbon\Carbon;
 use Faker\Factory as Faker;
@@ -13,6 +14,13 @@ use Illuminate\Support\Facades\Log;
 
 class TimerFactory extends Factory
 {
+    /**
+     * The name of the factory's corresponding model.
+     *
+     * @var string
+     */
+    protected $model = Timer::class;
+
     /**
      * Define the model's default state.
      *

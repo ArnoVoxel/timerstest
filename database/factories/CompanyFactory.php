@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 class CompanyFactory extends Factory
 {
 
+    /* Setting the model that the factory will be creating. */
     protected $model = Company::class;
 
     /**
